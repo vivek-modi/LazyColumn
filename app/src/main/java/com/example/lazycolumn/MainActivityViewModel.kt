@@ -22,7 +22,7 @@ class MainActivityViewModel : ViewModel() {
                             index = it,
                             name = "Xyz $it",
                             iconUrl = R.drawable.ic_android_black_24dp,
-                            summary = "abc ${it * it}",
+                            summary = "abc <strong>${it * it}</strong>",
                             eventModel = EventModel(
                                 currentModel = getCurrentItem(it),
                                 eventList = getEventList()

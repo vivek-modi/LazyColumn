@@ -33,6 +33,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 
 @Composable
@@ -145,6 +146,7 @@ private fun SummaryView(summary: String) {
             update = { textView ->
                 with(textView) {
                     text = HtmlCompat.fromHtml(summary, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                    setTextColor(ContextCompat.getColor(context, R.color.black))
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, 60F)
                 }
             }
