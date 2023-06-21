@@ -21,7 +21,7 @@ class MainActivityViewModel : ViewModel() {
                         TestDataModel(
                             index = it,
                             name = "Xyz $it",
-                            iconUrl = it,
+                            iconUrl = R.drawable.ic_android_black_24dp,
                             summary = "abc ${it * it}",
                             eventModel = EventModel(
                                 currentModel = getCurrentItem(it),

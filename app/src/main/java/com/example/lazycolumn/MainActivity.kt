@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupView() {
         binding.composeView.setContent {
             AppBarScaffold(R.string.app_name, true) {
-
+                SeeAllView(viewModel, {}, {})
             }
         }
     }
