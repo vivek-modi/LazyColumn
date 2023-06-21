@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -37,7 +39,7 @@ import androidx.core.text.HtmlCompat
 fun SeeAllView(
     viewModel: MainActivityViewModel,
     handleItemSelection: (TestDataModel) -> Unit,
-    inProgressCtaAction: (CurrentModel) -> Unit,
+    ctaAction: (CurrentModel) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -45,7 +47,7 @@ fun SeeAllView(
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         items(viewModel.itemList, key = { it.index }) { item ->
-            ListContent(false, item, inProgressCtaAction, handleItemSelection)
+            ListContent(false, item, ctaAction, handleItemSelection)
         }
     }
 }
@@ -54,18 +56,18 @@ fun SeeAllView(
 fun ListContent(
     useSpaceView: Boolean = true,
     myTestDataItem: TestDataModel,
-    inProgressCtaAction: (CurrentModel) -> Unit,
+    ctaAction: (CurrentModel) -> Unit,
     handleItemSelection: (TestDataModel) -> Unit,
 ) {
     val name = myTestDataItem.name
     val image = myTestDataItem.iconUrl
     val summary = myTestDataItem.summary
-    val statusModel = myTestDataItem.eventModel.currentModel
+    val currentModel = myTestDataItem.eventModel.currentModel
 
     AnimatedVisibility(visible = useSpaceView) {
         Spacer(Modifier.height(20.dp))
     }
-    ListItem(name, image, summary, statusModel, inProgressCtaAction) {
+    ListItem(name, image, summary, currentModel, ctaAction) {
         handleItemSelection(myTestDataItem)
     }
 }
@@ -93,6 +95,12 @@ fun ListItem(
         ) {
             PanelHeaderView(name, image)
             SummaryView(summary)
+            CtaView(
+                modifier = Modifier
+                    .align(Alignment.End),
+                currentModel,
+                ctaAction,
+            )
         }
     }
 }
@@ -137,9 +145,28 @@ private fun SummaryView(summary: String) {
             update = { textView ->
                 with(textView) {
                     text = HtmlCompat.fromHtml(summary, HtmlCompat.FROM_HTML_MODE_COMPACT)
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX, 100F)
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, 60F)
                 }
             }
         )
     }
 }
+
+@Composable
+private fun CtaView(
+    modifier: Modifier,
+    currentModel: CurrentModel,
+    ctaAction: (CurrentModel) -> Unit,
+) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = currentModel.showCtaAction
+    ) {
+        ClickableText(
+            modifier = Modifier.padding(top = 20.dp),
+            text = AnnotatedString(currentModel.actionTitle),
+            onClick = { ctaAction(currentModel) }
+        )
+    }
+}
+

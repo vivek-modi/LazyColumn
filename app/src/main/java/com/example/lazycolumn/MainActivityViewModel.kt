@@ -42,7 +42,7 @@ class MainActivityViewModel : ViewModel() {
             subTitle = "$index",
             actionUrl = "$index",
             messageId = index,
-            showCtaAction = false
+            showCtaAction = index % 2 == 0
         )
     }
 
