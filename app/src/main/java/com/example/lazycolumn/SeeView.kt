@@ -1,5 +1,7 @@
 package com.example.lazycolumn
 
+import android.util.TypedValue
+import android.widget.TextView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 
 @Composable
 fun SeeAllView(
@@ -88,6 +92,7 @@ fun ListItem(
             modifier = Modifier.padding(20.dp)
         ) {
             PanelHeaderView(name, image)
+            SummaryView(summary)
         }
     }
 }
@@ -119,6 +124,22 @@ private fun PanelHeaderView(testName: String, testImage: Int) {
             imageVector = Icons.Filled.ArrowBack,
             contentDescription = null,
             tint = Color.Black
+        )
+    }
+}
+
+@Composable
+private fun SummaryView(summary: String) {
+    AnimatedVisibility(visible = summary.isNotEmpty()) {
+        AndroidView(
+            modifier = Modifier.padding(top = 20.dp),
+            factory = { context -> TextView(context) },
+            update = { textView ->
+                with(textView) {
+                    text = HtmlCompat.fromHtml(summary, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, 100F)
+                }
+            }
         )
     }
 }
