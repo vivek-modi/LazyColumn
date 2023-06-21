@@ -6,8 +6,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,10 +65,10 @@ fun ListContent(
     ctaAction: (CurrentModel) -> Unit,
     handleItemSelection: (TestDataModel) -> Unit,
 ) {
-    val name = myTestDataItem.name
-    val image = myTestDataItem.iconUrl
-    val summary = myTestDataItem.summary
-    val currentModel = myTestDataItem.eventModel.currentModel
+    val name by remember { mutableStateOf(myTestDataItem.name) }
+    val image by remember { mutableStateOf(myTestDataItem.iconUrl) }
+    val summary by remember { mutableStateOf(myTestDataItem.summary) }
+    val currentModel by remember { mutableStateOf(myTestDataItem.eventModel.currentModel) }
 
     AnimatedVisibility(visible = useSpaceView) {
         Spacer(Modifier.height(20.dp))
@@ -73,7 +78,6 @@ fun ListContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListItem(
     name: String,
@@ -83,17 +87,8 @@ fun ListItem(
     ctaAction: (CurrentModel) -> Unit,
     openBottomSheet: () -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxSize(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        onClick = { openBottomSheet() },
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
+    WrapperCard(openBottomSheet = openBottomSheet) {
+        WrapperColumn(modifier = Modifier.padding(20.dp)) {
             PanelHeaderView(name, image)
             SummaryView(summary)
             CtaView(
@@ -106,12 +101,30 @@ fun ListItem(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun WrapperCard(
+    openBottomSheet: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxSize(),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = { openBottomSheet() },
+    ) { content() }
+}
+
+@Composable
+private fun WrapperColumn(modifier: Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(modifier = modifier, content = content)
+}
+
 @Composable
 private fun PanelHeaderView(testName: String, testImage: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+    WrapperRow {
         Image(
             modifier = Modifier.weight(0.1f),
             painter = painterResource(testImage),
@@ -135,6 +148,14 @@ private fun PanelHeaderView(testName: String, testImage: Int) {
             tint = Color.Black
         )
     }
+}
+
+@Composable
+private fun WrapperRow(content: @Composable RowScope.() -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) { content() }
 }
 
 @Composable
